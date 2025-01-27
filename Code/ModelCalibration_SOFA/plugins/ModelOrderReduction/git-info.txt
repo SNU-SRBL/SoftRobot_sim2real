@@ -1,0 +1,30 @@
+# Git info for ModelOrderReduction
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+7784481bfef766d311312e912ce5b0ecd52960dd
+
+## Branches containing current commit
+## git branch -a --contains 7784481bfef766d311312e912ce5b0ecd52960dd 
+* (HEAD detached at 7784481)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/66/merge
+  remotes/origin/pr/70/head
+  remotes/origin/pr/71/head
+  remotes/origin/tag/release-v23.06
+  remotes/origin/v23.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/SofaDefrost/ModelOrderReduction.git (fetch)
+origin	https://github.com/SofaDefrost/ModelOrderReduction.git (push)
+
+## More info
+## git log --pretty -n 1
+commit 7784481bfef766d311312e912ce5b0ecd52960dd
+Author: Alex Bilger <alxbilger@users.noreply.github.com>
+Date:   Wed Feb 8 13:37:25 2023 +0100
+
+    Update scenes (#69)

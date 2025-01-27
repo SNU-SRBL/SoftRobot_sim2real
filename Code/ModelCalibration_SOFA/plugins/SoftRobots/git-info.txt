@@ -1,0 +1,29 @@
+# Git info for SoftRobots
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+4acf28248278106c2855206f1751dcba41268039
+
+## Branches containing current commit
+## git branch -a --contains 4acf28248278106c2855206f1751dcba41268039 
+* (HEAD detached at 4acf282)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/222/head
+  remotes/origin/pr/222/merge
+  remotes/origin/tag/release-master
+  remotes/origin/v23.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofadefrost/softRobots.git (fetch)
+origin	https://github.com/sofadefrost/softRobots.git (push)
+
+## More info
+## git log --pretty -n 1
+commit 4acf28248278106c2855206f1751dcba41268039
+Author: EulalieCoevoet <eulalie.coevoet@gmail.com>
+Date:   Tue Jun 6 10:50:20 2023 +0200
+
+    Update README.md

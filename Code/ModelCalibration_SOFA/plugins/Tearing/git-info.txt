@@ -1,0 +1,27 @@
+# Git info for Tearing
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+6968ad3f924560b4b3721f98bbefd1bcf0716bde
+
+## Branches containing current commit
+## git branch -a --contains 6968ad3f924560b4b3721f98bbefd1bcf0716bde 
+* (HEAD detached at 6968ad3)
+  main
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/main
+  remotes/origin/tag/release-v23.06
+  remotes/origin/v23.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/InfinyTech3D/Tearing.git (fetch)
+origin	https://github.com/InfinyTech3D/Tearing.git (push)
+
+## More info
+## git log --pretty -n 1
+commit 6968ad3f924560b4b3721f98bbefd1bcf0716bde
+Author: epernod <erik.pernod@gmail.com>
+Date:   Wed Jun 7 12:09:00 2023 +0200
+
+    Fix ci on mac

@@ -1,0 +1,274 @@
+<?xml version="1.0" ?>
+<Node name="root" dt="0.01" gravity="0 -981 0">
+
+	<RequiredPlugin pluginName="SoftRobots" />
+	<VisualStyle displayFlags="showVisualModels showCollisionModels hideForceFields showInteractionForceFields showBehaviorModels" />
+	<BackgroundSetting color="256 256 256" />
+
+	<FreeMotionMasterSolver />
+	<QPInverseProblemSolver/>
+	<CollisionPipeline verbose="0" />
+	<BruteForceBroadPhase />
+	<BVHNarrowPhase/>
+        <CollisionResponse response="FrictionContactConstraint" />
+	<LocalMinDistance name="Proximity" alarmDistance="0" contactDistance="0" />
+
+
+	<Node name="settings_video" >
+		<ViewerSetting resolution="1280 720 "/> <!-- 640 480 -->
+	</Node>
+
+	<!--
+	<LightManager name="lightManager"
+		listening="1"
+		shadows="1"
+		softShadows="1"
+		/>
+	<SpotLight name="keylight"
+	    position="10 40 -20"
+	    direction="-1 -4 2"
+	    cutoff="30"
+	    shadowTextureSize="2048" />
+	<SpotLight name="filllight"
+	    position="-20.0 50.0 0.0"
+	    direction="1.6 -4 -0.1"
+	    cutoff="20"
+	    shadowTextureSize="512" />
+	<OglShadowShader />
+	-->
+
+	<Node name="TrackedPoints" activated="1">
+		<VisualStyle displayFlags="showCollisionModels" />
+		<MeshObjLoader name="loader" filename="init.obj"/>
+		<Mesh src="@loader"/>
+        <EulerImplicit />
+        <CGLinearSolver iterations="10" tolerance="1e-9" threshold="1e-9" />
+        <MechanicalObject src="@loader" name="movingDOFs" />
+
+
+        <!-- ReadState is useful for this scene but CURRENTLY CRASHES SOFA-->
+
+		<!--<Sphere radius="0.3" color="1 0 0 1" group="3"/>
+        <ReadState filename="ctrlPoints.state" />-->
+    </Node>
+
+	<!-- Interactive Mode -->
+	<Node name="goal" activated="1" >
+		<EulerImplicitSolver firstOrder="1" />
+		<CGLinearSolver iterations="100" tolerance="1e-05" threshold="1e-05" />
+		<MechanicalObject name="goalMO" position="@../TrackedPoints/movingDOFs.position"/> <!--   0 -1.5 1.2 2 -0.9 -0.2 -2 -0.9 -0.2 0.6 -4.1 0.2   -0.6 -4.1 0.2 -->
+<!-- 		<UniformMass totalMass="0.0" /> -->
+		<Sphere radius="0.2" group="3"/>
+		<UncoupledConstraintCorrection />
+	</Node>
+
+	<Node name="VisuGoal" activated="0">
+<!-- 		<IdentityMapping name="default17"  /> -->
+                <OglShader
+		    vertFilename="shaders/shaderLibrary.glsl"
+		    fragFilename="shaders/shaderLibrary.glsl" />
+		<OglFloat3Variable name="AmbientColor" value="0.0 0.0 0.0" />
+		<OglFloat3Variable name="DiffuseColor" value="0.8 0.2 0.2" />
+<!-- 		<OglFloat3Variable name="SpecularColor" value="1 0.8 0.8" /> -->
+		<OglFloatVariable  name="SpecularRoughness" value="0.25" />
+		<OglFloatVariable  name="SpecularReflectance" value="0.05" />
+		<OglFloat3Variable name="LightColor" value="1 1 1" />
+		<OglFloat3Variable name="LightPosition" value="10 10 -60" />
+		<OglFloat3Variable name="LightDirection" value="-0.1 -0.1 0.6" />
+	</Node>
+	<!--
+		<Node name="assets">
+		<OglModel name="floor"
+		    filename="mesh/floor.obj"
+		    color="0.5 0.5 0.5"
+		    dy="-3.6" />
+	</Node>
+	-->
+
+	<!--
+	<Node name="articulatedObject1">
+		<VisualStyle displayFlags="showVisualModels hideBehaviorModels showCollisionModels hideMappings hideForceFields hideInteractionForceFields" />
+		<MechanicalObject name="ArticulatedObject" template="Vec1d"/>
+		<Node name="6D_DOFs1">
+			<MechanicalObject name="6D_Dof" template="Rigid3" />
+			<UniformMass mass="1.28 0.1 [1 0 0 0 1 0 0 0 1]" showAxisSizeFactor="10"/>
+			<ArticulatedSystemMapping input1="@../ArticulatedObject" output="@6D_Dof"/>
+
+			<Node name="goal">
+				<MechanicalObject name="goalMO" position="0 0 0"/>
+				<Sphere radius="5" group="3" active="0"/>
+				<RigidMapping index="1"/>
+			</Node>
+
+		</Node>
+		<ArticulatedHierarchyContainer filename="trajectory_random.bvh"/>
+		<ArticulatedHierarchyBVHController />
+	</Node>
+	-->
+
+
+	<Node name="Santa">
+		<EulerImplicit name="odesolver"  />
+		<!--<ShewchukPCGLinearSolver iterations="2" name="linearsolver" tolerance="1e-5" preconditioners="preconditioner" use_precond="true"  use_first_precond="false" update_step="1" /> -->
+		<SparseLDLSolver name="preconditioner"   />
+
+		<MeshVTKLoader name="loader" filename="santa_tetra0.vtu"/>
+		<TetrahedronSetTopologyContainer src="@loader" name="Container"/>
+		<TetrahedronSetTopologyModifier name="Modifier" />
+
+		 <!-- ici tu peux appliquer des paramètres pour changer la position de l'objet avec rx, ry, rz ou dx, dy, dz -->
+		<MechanicalObject name="tetras" template="Vec3d" showIndices="false" showIndicesScale="4e-5"/>
+		<UniformMass totalMass="0.5" />
+		<TetrahedralCorotationalFEMForceField template="Vec3d" name="FEM" method="large" poissonRatio="0.4"  youngModulus="72000"/>
+
+		<!-- ici tu peux modifier les paramètres de la box : xmin ymin zmin xmax ymax zmax -->
+		<BoxROI name="boxROI" box="-1 -3 -1  1 -1.8 -0.3" drawBoxes="true"  />
+		<FixedConstraint indices="@boxROI.indices" />
+
+
+
+<!-- 	<CudaSparseTAUCSLLtSolver name="preconditioner" template="CompressedRowSparseMatrix3f" useWarping="false" useMultiThread="true" precompute="false"  /> -->
+<!--  	<SparseCholeskySolver template="CompressedRowSparseMatrixf" name="preconditioner" printLog="true" />	 -->
+<!--		<LinearSolverConstraintCorrection solverName="preconditioner" />   -->
+		<GenericConstraintCorrection solverName="preconditioner"/>
+
+
+		<Node name="surface">
+			<TriangleSetTopologyContainer name="Container" position="@../loader.position"/>
+			<TriangleSetTopologyModifier name="Modifier" />
+			<Tetra2TriangleTopologicalMapping name="Mapping" />
+
+			<Node name="surfaceInterne" >
+				<MeshSTLLoader name="loader" filename="bubble_selection_in_bob.stl" scale="1"/>
+				<Mesh src="@loader" name="topo"/>
+				<OglModel template="ExtVec3f" name="Visual" color="0.2 0.4 0.6 0.3"  />
+
+			</Node>
+
+<!-- 			<BoxROI  box="0 0 0 10 10 10" name="roi"  /> -->
+			<MeshROI name="roi" position="@../../Santa/tetras.rest_position"  ROIposition="@./surfaceInterne/topo.position" ROIedges="@./surfaceInterne/topo.edges" ROItriangles="@./surfaceInterne/topo.triangles"/>
+
+
+			<Node name="VisuCavity" activated="false">
+				<OglModel template="ExtVec3f" name="Visual" color="0.2 0.4 0.6 0.3"  position="@../roi.position" triangles="@../roi.trianglesInROI" />
+			</Node>
+
+			<Node name="Visu" activated="true">
+				<OglModel template="ExtVec3f" name="Visual" color="0.2 0.4 0.6 0.3"  />
+				<!--
+				<OglShader
+				    vertFilename="shaders/shaderLibrary.glsl"
+				    fragFilename="shaders/shaderLibrary.glsl" />
+				<OglFloat3Variable name="AmbientColor" value="0.0 0.0 0.0" />
+				<OglFloat3Variable name="DiffuseColor" value="0.2 0.2 0.8" />
+				<OglFloat3Variable name="SpecularColor" value="0.8 0.8 1" />
+				<OglFloatVariable  name="SpecularRoughness" value="0.25" />
+				<OglFloatVariable  name="SpecularReflectance" value="0.05" />
+				<OglFloat3Variable name="LightColor" value="1 1 1" />
+				<OglFloat3Variable name="LightPosition" value="10 10 -60" />
+				<OglFloat3Variable name="LightDirection" value="-0.1 -0.1 0.6" />
+				-->
+
+				<IdentityMapping name="default17"  />
+			</Node>
+
+
+		</Node>
+
+
+
+		<Node name="Effector" activated="true" >
+			<MechanicalObject name="effectorPoint"
+							position=" 0 0 0   0 -1.5 1.2   2 -0.9 -0.2   -2 -0.9 -0.2   0.6 -4.1 0.2   -0.6 -4.1 0.2
+										0 0 0   2.5 -0.9 -0.2   -2.5 -0.9 -0.2   0.6 -4.5 0.2   -0.6 -4.5 0.2" />
+
+<!--			<MechanicalObject name="effectorPoint"
+							position=" 0 -1.5 1.2   2 -0.9 -0.2   -2 -0.9 -0.2   0.6 -4.1 0.2   -0.6 -4.1 0.2" />-->
+
+			<PositionEffector indices="0 1 2 3 4 5" effectorGoal="@../../goal/goalMO.position"/>
+
+			<CableActuator name="cableHeadF" indices="6" pullPoint="0 -0.1 3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+			<CableActuator name="cableHeadB" indices="6" pullPoint="0 -2 -3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+
+			<CableActuator name="cableLArmF" indices="7" pullPoint="2.8 -1 3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+			<CableActuator name="cableLArmB" indices="7" pullPoint="1.5 0.9 -3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+			<CableActuator name="cableLArmB2" indices="7" pullPoint="4.5 -0.9 -3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+
+
+			<CableActuator name="cableRArmF" indices="8" pullPoint="-2.8 -1 3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+			<CableActuator name="cableRArmB" indices="8" pullPoint="-1.5 0.9 -3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+			<CableActuator name="cableRArmB2" indices="8" pullPoint="-4.5 -0.9 -3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+
+
+			<CableActuator name="cableLLegF" indices="9" pullPoint="0.2 -4.6 3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+			<CableActuator name="cableLLegF2" indices="9" pullPoint="3.5 -4 3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+			<CableActuator name="cableLLegB" indices="9" pullPoint="0.6 -4.5 -3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+
+			<CableActuator name="cableRLegF" indices="10" pullPoint="-0.2 -4.6 3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+			<CableActuator name="cableRLegF2" indices="10" pullPoint="-3.5 -4 3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+			<CableActuator name="cableRLegB" indices="10" pullPoint="-0.6 -4.5 -3" maxPositiveDisp="20" maxNegativeDisp="15"  />
+
+			<BarycentricMapping name="mapping1"   mapForces="false" mapMasses="false"/>
+
+<!--			<WriteState filename="ctrlPoints.state" />-->
+		</Node>
+
+
+		<Node name="Cavity1" activated="true">
+			<Mesh position="@../../Santa/tetras.rest_position"   triangles="@../../Santa/surface/roi.trianglesInROI"   name="topo"/>
+			<MechanicalObject name="cavity" />
+			<SurfacePressureActuator triangles="@topo.triangles"  maxPressure="200" visualization="1" showVisuScale="0.0001"/>
+
+			<Triangle group="3"/>
+
+			<BarycentricMapping name="mapping2"  mapForces="false" mapMasses="false"/>
+		</Node>
+
+
+
+
+<!--		<Node name="Cavity2" activated="true">
+			<MeshObjLoader name="loader" filename="Hollow_Bunny_Neck.obj"      />
+			<Mesh src="@loader" name="topo"/>
+			<MechanicalObject name="cavity" />
+			<SurfacePressureConstraint triangles="@topo.triangles" actuator="true" maxPressure="300" visualization="1" showVisuScale="0.0001"/>-->
+
+<!-- 			<Triangle group="3"/> -->
+
+<!--			<BarycentricMapping name="mapping2"  mapForces="false" mapMasses="false"/>
+		</Node>	-->
+
+<!--		<Node name="Cavity3" activated="true">
+			<MeshObjLoader name="loader" filename="Hollow_Bunny_Ear_1.obj"      />
+			<Mesh src="@loader" name="topo"/>
+			<MechanicalObject name="cavity" />
+			<SurfacePressureConstraint triangles="@topo.triangles" actuator="true" maxPressure="300" visualization="1" showVisuScale="0.0001"/>-->
+
+<!-- 			<Triangle group="3"/> -->
+
+<!--			<BarycentricMapping name="mapping2"  mapForces="false" mapMasses="false"/>
+		</Node>-->
+
+<!--		<Node name="Cavity4" activated="true">
+			<MeshObjLoader name="loader" filename="Hollow_Bunny_Ear_2.obj"      />
+			<Mesh src="@loader" name="topo"/>
+			<MechanicalObject name="cavity" />
+			<SurfacePressureConstraint triangles="@topo.triangles" actuator="true" maxPressure="300" visualization="1" showVisuScale="0.0001"/>-->
+
+<!-- 			<Triangle group="3"/> -->
+
+<!--			<BarycentricMapping name="mapping2"  mapForces="false" mapMasses="false"/>
+		</Node>	-->
+
+
+	</Node>
+
+
+
+
+
+
+
+
+
+</Node>

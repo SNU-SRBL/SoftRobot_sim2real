@@ -1,0 +1,109 @@
+<?xml version="1.0" ?>
+<Node name="root" dt="0.01" gravity="0 -9.81 0">
+    
+	<RequiredPlugin name="SoftRobotsPlugin" pluginName="SoftRobots" /> 
+	<RequiredPlugin name="SofaDeformable"/>  
+	<RequiredPlugin name="SofaConstraint"/>
+	<RequiredPlugin name="SofaEngine"/>
+	<RequiredPlugin name="SofaImplicitOdeSolver"/>
+	<RequiredPlugin name="SofaLoader"/>
+	<RequiredPlugin name="SofaMeshCollision"/>
+	<RequiredPlugin name="SofaOpenglVisual"/> 
+	<RequiredPlugin name="SofaSimpleFem"/>
+	<RequiredPlugin name="SofaSparseSolver"/>
+	<VisualStyle displayFlags="showVisualModels showCollisionModels hideForceFields showInteractionForceFields showBehaviorModels" />
+  
+	<FreeMotionAnimationLoop />
+	<DefaultVisualManagerLoop />
+	<QPInverseProblemSolver name="InverseProblemSolver"/>
+	<DefaultPipeline verbose="0" />
+	<BruteForceBroadPhase />
+	<BVHNarrowPhase/>
+	<LocalMinDistance name="Proximity" alarmDistance="0" contactDistance="0" />
+	
+    <DefaultContactManager name="Response" response="FrictionContactConstraint" />
+
+	<!-- Interactive Mode -->
+	<Node name="goal" activated="1" >
+		<EulerImplicitSolver firstOrder="1" />
+		<CGLinearSolver iterations="100" tolerance="1e-05" threshold="1e-05"/>
+		<MechanicalObject name="goalMO" position="0 0 110"/>
+		<!-- to write or read in a text file in order to move our sphere 
+		<ReadState filename="trajectoire.ws" />-->
+		<SphereCollisionModel radius="3" group="3"/>
+		<UncoupledConstraintCorrection />
+	</Node>
+
+
+    <Node name="Cylinder" >
+
+	 	<EulerImplicitSolver name="cg_odesolver" rayleighMass="1" rayleighStiffness="0.03" />  
+		<SparseLDLSolver name="preconditioner"  template="CompressedRowSparseMatrixMat3x3d" />
+
+		<MeshOBJLoader filename="mesh/Cylinder.obj" name="loader" />
+		<!--OglModel src='@loader'/>-->
+
+		<SparseGridRamificationTopology n="6 6 12" position="@loader.position" triangles="@loader.triangles" quads="@loader.quads" nbVirtualFinerLevels="1" finestConnectivity="0" />
+		
+		<MechanicalObject name="dofs"  scale="1" dy="2"/>
+		<UniformMass totalMass="1.0" />
+		<HexahedronFEMForceField name="FEM" youngModulus="15000.0" poissonRatio="0.4" method="large" updateStiffnessMatrix="false" printLog="0"/>
+
+
+		<GenericConstraintCorrection solverName="preconditioner" />
+
+		<BoxROI name="boxROI" box="-20 -20 -5  20 20 5" drawBoxes="true"  />
+		<RestShapeSpringsForceField points="@boxROI.indices" stiffness="1e12"/>
+
+		<Node name="VisuCybot" activated="true">
+				<MeshOBJLoader name='Loader' filename="mesh/Cylinder.obj"/>  
+				<OglModel src='@Loader'/>
+				<BarycentricMapping input="@.." output="@VisuCybot" />
+		</Node>
+
+
+		<Node name="Effector" activated="true" >
+			<MechanicalObject name="effectorPoint" position=" 0 0 110 " />
+			<PositionEffectorGS indices="0" template="Vec3d" effectorGoal="@../../goal/goalMO.position" />
+			<BarycentricMapping name="mapping1"   mapForces="false" mapMasses="false"/>
+		</Node>
+
+	    <!--The following script get each pressure value at the end of the animation step. It will give the specific tidy vector of displacements to the 
+	        generic robot controller that will replace the SerialPortPressureControl.-->
+				
+		<Node name="Cavity1" activated="true">
+			<MeshOBJLoader filename="mesh/Cavity1.obj" name="loader" />
+			<!--OglModel src='@loader'/>-->
+			<MeshTopology src="@loader" name="topo"/>
+			<MechanicalObject name="cavity" />
+			<SurfacePressureActuator template="Vec3d" name="actuator" triangles="@topo.triangles" maxPressure="240" drawPressure="1" drawScale="0.0001"/>
+			<TriangleCollisionModel group="3"/>  	
+			<BarycentricMapping name="mapping2"  mapForces="false" mapMasses="false"/>
+		</Node>
+		
+
+		<Node name="Cavity2" activated="true">
+			<MeshOBJLoader filename="mesh/Cavity2.obj" name="loader" />
+			<!--OglModel src='@loader'/>-->
+			<MeshTopology src="@loader" name="topo"/>
+			<MechanicalObject name="cavity" />
+			<SurfacePressureActuator template="Vec3d" name="actuator" triangles="@topo.triangles" maxPressure="240" drawPressure="1" drawScale="0.0001"/>
+			<TriangleCollisionModel group="3"/>  
+			<BarycentricMapping name="mapping2"  mapForces="false" mapMasses="false"/>
+		</Node>
+
+		
+		<Node name="Cavity3" activated="true">
+			<MeshOBJLoader filename="mesh/Cavity3.obj" name="loader" />	
+			<!--OglModel src='@loader'/>-->	
+			<MeshTopology src="@loader" name="topo"/>
+			<MechanicalObject name="cavity" />		
+			<SurfacePressureActuator template="Vec3d" name="actuator" triangles="@topo.triangles" maxPressure="240" drawPressure="1" drawScale="0.0001"/>
+			<TriangleCollisionModel group="3"/>  			
+			<BarycentricMapping name="mapping2"  mapForces="false" mapMasses="false"/>
+		</Node>
+
+    </Node>
+
+</Node>
+

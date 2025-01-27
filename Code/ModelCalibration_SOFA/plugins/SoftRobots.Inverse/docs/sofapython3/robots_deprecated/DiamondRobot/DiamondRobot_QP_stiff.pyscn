@@ -1,0 +1,75 @@
+
+import Sofa
+
+import os
+path = os.path.dirname(os.path.abspath(__file__))+'/mesh/'
+meshRobot=path+'siliconeV0.vtu'
+
+GREEN = "\033[1;32m "
+ENDL  = '\033[0m'
+print(GREEN + "[INFO]" + ENDL + " [Scene]:" + " If the computation is slow, it might be because you did not add sparse and metis to sofa configuration.")
+print(GREEN + "[INFO]" + ENDL + " [Scene]:" + " (please refer to the README file for more informations)")
+
+
+def createScene(rootNode):
+
+     # Root node
+                rootNode.findData('dt').value=1
+                rootNode.findData('gravity').value='0 0 -9810'
+                rootNode.addObject('VisualStyle', displayFlags='showCollision showVisualModels showForceFields showInteractionForceFields hideCollisionModels hideBoundingCollisionModels hideWireframe')
+
+    #Required plugin
+                rootNode.addObject('RequiredPlugin', pluginName='SoftRobots SoftRobots.Inverse')
+
+                rootNode.addObject('FreeMotionMasterSolver')
+                rootNode.addObject('DefaultPipeline', verbose='0')
+                rootNode.addObject('BruteForceBroadPhase')
+                rootNode.addObject('BVHNarrowPhase')
+                rootNode.addObject('DefaultContactManager', response='FrictionContactConstraint')
+                rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance='3', contactDistance='0.5')
+                rootNode.addObject('QPInverseProblemSolver', name="QP", printLog='0')
+
+                # The following script get each cable displacement at the end of the animation step.
+                rootNode.addObject('PythonScriptController', classname="interface", filename="interface/DiamondRobotStiffInterface.py")
+                # Serial Port
+                rootNode.addObject('SerialPortBridgeGeneric', name="serial", port="/dev/ttyACM0", baudRate="115200", size="5", listening=True)
+
+
+                #goal
+                goal = rootNode.addChild('goal')
+                goal.addObject('EulerImplicitSolver', firstOrder=True)
+                goal.addObject('CGLinearSolver', iterations='100',threshold="1e-5", tolerance="1e-5")
+                goal.addObject('MechanicalObject', name='goalMO', position='0 0 125')
+                goal.addObject('SphereCollisionModel', radius='5', group='1')
+                goal.addObject('UncoupledConstraintCorrection')
+
+                #feuille
+                feuille = rootNode.addChild('feuille')
+                feuille.addObject('EulerImplicitSolver')
+                feuille.addObject('ShewchukPCGLinearSolver', iterations="1", name="linearsolver", tolerance="1e-5", preconditioners="preconditioner", use_precond=True, update_step="1")
+                feuille.addObject('MeshVTKLoader', name="loader", filename=meshRobot)
+                feuille.addObject('TetrahedronSetTopologyContainer', src="@loader")
+                feuille.addObject('MechanicalObject', name="tetras", template="Vec3", showIndices=False, showIndicesScale="4e-5", rx="90", dz="35")
+                feuille.addObject('UniformMass', totalMass="0.5")
+                feuille.addObject('TetrahedronFEMForceField', youngModulus="180", poissonRatio="0.45")
+                feuille.addObject('BoxROI', name="boxROI", box="-15 -15 -40  15 15 10", drawBoxes=True)
+                feuille.addObject('FixedConstraint', indices="@boxROI.indices")
+                feuille.addObject('SparseLDLSolver', name="preconditioner")
+                feuille.addObject('LinearSolverConstraintCorrection', solverName="preconditioner")
+                feuille.addObject('ConstantForceField', name='cff', forces='0 0 0 0 0 0 ',  points='198 1128', arrowSizeCoef='0.03')
+
+                #feuille/controlledPoints
+                controlledPoints = feuille.addChild('controlledPoints')
+                controlledPoints.addObject('MechanicalObject', name="actuatedPoints", template="Vec3", position="0 0 125  0 97 45   -97 0 45   0 -97 45  97 0 45    0 0 115")
+
+                controlledPoints.addObject('PositionEffector', template="Vec3", indices="0", actuator="0", effectorGoal="@../../goal/goalMO.position")
+
+                controlledPoints.addObject('CableActuator', template="Vec3", name="nord" , indices="1", pullPoint="0 10 30" , maxPositiveDisp="20", minForce="0")
+                controlledPoints.addObject('CableActuator', template="Vec3", name="ouest", indices="2", pullPoint="-10 0 30", maxPositiveDisp="20", minForce="0")
+                controlledPoints.addObject('CableActuator', template="Vec3", name="sud"  , indices="3", pullPoint="0 -10 30", maxPositiveDisp="20", minForce="0")
+                controlledPoints.addObject('CableActuator', template="Vec3", name="est"  , indices="4", pullPoint="10 0 30" , maxPositiveDisp="20", minForce="0")
+                controlledPoints.addObject('CableActuator', template="Vec3", name="haut"  , indices="5", pullPoint="0 0 30" , maxPositiveDisp="20", minForce="0")
+
+                controlledPoints.addObject('BarycentricMapping', mapForces=False, mapMasses=False)
+
+                return rootNode

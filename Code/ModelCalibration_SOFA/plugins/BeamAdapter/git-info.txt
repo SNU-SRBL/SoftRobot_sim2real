@@ -1,0 +1,30 @@
+# Git info for BeamAdapter
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+ed597402e58ad98910048399a59eb6c252252d09
+
+## Branches containing current commit
+## git branch -a --contains ed597402e58ad98910048399a59eb6c252252d09 
+* (HEAD detached at origin/v23.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/50/head
+  remotes/origin/pr/65/head
+  remotes/origin/pr/65/merge
+  remotes/origin/pr/97/head
+  remotes/origin/v23.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/BeamAdapter (fetch)
+origin	https://github.com/sofa-framework/BeamAdapter (push)
+
+## More info
+## git log --pretty -n 1
+commit ed597402e58ad98910048399a59eb6c252252d09
+Author: Alex Bilger <alxbilger@users.noreply.github.com>
+Date:   Wed May 17 11:50:56 2023 +0200
+
+    Disable BeamLengthMapping test (#95)

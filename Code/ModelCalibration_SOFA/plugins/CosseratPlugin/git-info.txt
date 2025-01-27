@@ -1,0 +1,26 @@
+# Git info for CosseratPlugin
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+9475f238a95b876ddbcc0ff40314ab6c18644237
+
+## Branches containing current commit
+## git branch -a --contains 9475f238a95b876ddbcc0ff40314ab6c18644237 
+* (HEAD detached at 9475f23)
+  remotes/origin/v23.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/SofaDefrost/plugin.cosserat.git (fetch)
+origin	https://github.com/SofaDefrost/plugin.cosserat.git (push)
+
+## More info
+## git log --pretty -n 1
+commit 9475f238a95b876ddbcc0ff40314ab6c18644237
+Merge: 2bf9cb3 ca242cf
+Author: Hugo <hugo.talbot@sofa-framework.org>
+Date:   Thu Jun 29 23:10:19 2023 +0200
+
+    Merge pull request #79 from hugtalbot/fix_v2306_cosseratpython
+    
+    try to fix the use of Cosserat in binaries

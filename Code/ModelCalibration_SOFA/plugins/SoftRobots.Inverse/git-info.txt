@@ -1,0 +1,31 @@
+# Git info for SoftRobots.Inverse
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+823c007168e4b423e225927e9ccb3218e9a7401c
+
+## Branches containing current commit
+## git branch -a --contains 823c007168e4b423e225927e9ccb3218e9a7401c 
+* (HEAD detached at 823c0071)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/v23.06
+
+## Remotes
+## git remote -vv 
+origin	https://oauth2:<token>@gitlab.inria.fr/defrost/plugins/SoftRobots.Inverse.git (fetch)
+origin	https://oauth2:<token>@gitlab.inria.fr/defrost/plugins/SoftRobots.Inverse.git (push)
+
+## More info
+## git log --pretty -n 1
+commit 823c007168e4b423e225927e9ccb3218e9a7401c
+Merge: de01737d a66152a8
+Author: ADAGOLODJO Yinoussa <yinoussa.adagolodjo@inria.fr>
+Date:   Wed May 3 08:42:42 2023 +0000
+
+    Merge branch 'pr_cleaningCosseratEquality' into 'master'
+    
+    [WIP][constraint] Cleaning CosseratEquality
+    
+    See merge request defrost/plugins/SoftRobots.Inverse!68

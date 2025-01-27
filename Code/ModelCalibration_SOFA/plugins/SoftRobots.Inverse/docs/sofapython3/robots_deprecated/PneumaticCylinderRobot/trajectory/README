@@ -1,0 +1,4 @@
+Trajectoire automatique de la sphère Goal lors de la simulation sous sofa.
+Il y a une ligne dans le fichier scène qui lit la trajectoire à adopter : "Readstate".
+Mettre à jour le fichier trajectoire.ws pour changer la trajectoire de Goal.
+Actuellement, la trajectoire est produite par un script shell : scripttrajectoire.sh.

@@ -1,0 +1,27 @@
+# Git info for SofaPython3
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+e61f01bb89250bc73ab566f5c4415d6e0a5be81d
+
+## Branches containing current commit
+## git branch -a --contains e61f01bb89250bc73ab566f5c4415d6e0a5be81d 
+* (HEAD detached at origin/v23.06)
+  remotes/origin/v23.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/SofaPython3 (fetch)
+origin	https://github.com/sofa-framework/SofaPython3 (push)
+
+## More info
+## git log --pretty -n 1
+commit e61f01bb89250bc73ab566f5c4415d6e0a5be81d
+Author: Hugo <hugo.talbot@sofa-framework.org>
+Date:   Tue Jun 20 22:37:14 2023 +0200
+
+    [examples] Fix all example warnings and add all files to the release (#355)
+    
+    * add all examples to the release
+    
+    * fix all scene warnings for v23.06

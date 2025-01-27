@@ -1,0 +1,26 @@
+# Git info for STLIB
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+a776e78ef7e49a745fe744601b6db39590f414f4
+
+## Branches containing current commit
+## git branch -a --contains a776e78ef7e49a745fe744601b6db39590f414f4 
+* (HEAD detached at a776e78)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/v23.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofadefrost/STLIB.git (fetch)
+origin	https://github.com/sofadefrost/STLIB.git (push)
+
+## More info
+## git log --pretty -n 1
+commit a776e78ef7e49a745fe744601b6db39590f414f4
+Author: Alex Bilger <alxbilger@users.noreply.github.com>
+Date:   Tue Jun 13 09:45:54 2023 +0200
+
+    Replace alias (#107)

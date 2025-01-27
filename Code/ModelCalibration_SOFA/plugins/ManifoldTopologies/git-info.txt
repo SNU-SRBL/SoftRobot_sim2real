@@ -1,0 +1,27 @@
+# Git info for ManifoldTopologies
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+383875b81c3a753e770562ff174c55a9ad63a165
+
+## Branches containing current commit
+## git branch -a --contains 383875b81c3a753e770562ff174c55a9ad63a165 
+* (HEAD detached at origin/v23.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/v22.12
+  remotes/origin/v23.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/ManifoldTopologies (fetch)
+origin	https://github.com/sofa-framework/ManifoldTopologies (push)
+
+## More info
+## git log --pretty -n 1
+commit 383875b81c3a753e770562ff174c55a9ad63a165
+Author: Alex Bilger <alxbilger@users.noreply.github.com>
+Date:   Mon Oct 24 10:27:22 2022 +0200
+
+    Fix templates in scenes (#6)

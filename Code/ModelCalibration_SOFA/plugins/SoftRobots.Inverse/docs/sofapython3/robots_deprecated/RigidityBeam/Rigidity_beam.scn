@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+<Node name="root" dt="0.01" gravity="0 0 -9.81">
+
+    <!-- 
+    EVERYTHING IN STANDARD UNITS AND MULTIPLICATORS = METERS, KG, SECONDS...
+    
+    CAREFUL NOT TO USE millimeters
+    -->
+
+	<RequiredPlugin name="SofaBoundaryCondition"/>
+	<RequiredPlugin name="SofaConstraint"/>
+	<RequiredPlugin name="SofaEngine"/>
+	<RequiredPlugin name="SofaImplicitOdeSolver"/>
+	<RequiredPlugin name="SofaPreconditioner"/>
+	<RequiredPlugin name="SofaSimpleFem"/>
+	<RequiredPlugin name="SofaSparseSolver"/>
+	<RequiredPlugin pluginName="SoftRobots" />
+	<RequiredPlugin pluginName="SoftRobots.Inverse" />
+
+	<VisualStyle displayFlags="showCollision showVisualModels showBehaviorModels showForceFields showInteractionForceFields" />
+	<FreeMotionAnimationLoop />
+	<QPInverseProblemSolver name="QP" />
+	<!--<ConstraintAnimationLoop schemeCorrection="true" printLog="1"/>-->
+	
+	<DefaultPipeline verbose="0" />
+	<BruteForceBroadPhase />
+	<BVHNarrowPhase />
+        <DefaultContactManager response="FrictionContactConstraint" />
+	<LocalMinDistance name="Proximity" alarmDistance="3" contactDistance="0.5" />
+	
+	
+	<!-- Interactive Mode -->
+	<Node name="goal">
+		<EulerImplicitSolver firstOrder="1" />
+		<CGLinearSolver iterations="100" tolerance="1e-05" threshold="1e-05"/>
+	  
+	  
+		<MechanicalObject name="goalMO" position="0.01 0 0.0015"/> <!-- vertical position is 0.0025 initially so we ask for a displacement of 0.001m-->
+	  
+	  
+		<!-- <UniformMass totalMass="0.0" />-->
+		<SphereCollisionModel radius="0.002" group="3"/>
+		<UncoupledConstraintCorrection />
+	</Node>
+	
+	
+	
+	<!-- Shore A : 10 and 40 available at lab according to Mario-->
+	<!-- poisson's ratio : ~0.49 -->
+	
+		
+
+	<Node name="Beam">
+		<EulerImplicitSolver name="odesolver"  />
+<!-- 		<CGLinearSolver iterations="100" /> -->
+		<ShewchukPCGLinearSolver iterations="1" name="linearsolver" tolerance="1e-5" preconditioners="preconditioner" use_precond="true" update_step="1" />
+		
+		<RegularGridTopology nx="21" ny="5" nz="5" xmin="-0.050" xmax="0.050" ymin="-0.010" ymax="0.010" zmin="-0.0025" zmax="0.0025"/>
+		<!-- this mesh's dimensions are in mm : 5 x 20 x 100  ie in m : 0.005 x 0.020 x 0.100 equals a VOLUME of 0.00001 m³-->
+			
+		<!-- here, you can apply parameters to change the object's position with rx, ry, rz ou dx, dy, dz -->
+		<MechanicalObject name="hexas" template="Vec3d"/>
+			
+		<!--Volumic mass of silicon = ~1070kg/m³ for a shore 10A sample -->
+		<UniformMass totalMass="0.0107" />
+			
+			
+			
+		<BoxROI name="boxSoft" box="-0.050 -0.015 -0.005 0.035 0.015 0.005" drawBoxes="true" computeTriangles="false" computeEdges="false" /> 
+		<BoxROI name="boxRigidified" box="0.035 -0.015 -0.005 0.050 0.015 0.005" drawBoxes="true" computeTriangles="false" computeEdges="false" /> 
+			
+			
+		<Node name="soft">
+			<HexahedronSetTopologyContainer name="softTopo" hexahedra="@../boxSoft.hexahedraInROI"/>
+			<HexahedronFEMForceField  youngModulus="129000" poissonRatio="0.45"/>
+			<!-- Values for Dragon Skin 10A found on papers on the internet-->
+			
+			<!-- here, you can modify box parameters : xmin ymin zmin xmax ymax zmax -->
+			<BoxROI name="boxFixed" box="-0.050 -0.015 -0.005 -0.035 0.015 0.005" drawBoxes="true"  /> 
+			<FixedConstraint indices="@boxFixed.indices" /> 
+		</Node>
+			
+		<Node name="rigid">
+			<HexahedronSetTopologyContainer name="rigidTopo" hexahedra="@../boxRigidified.hexahedraInROI"/>
+			<HexahedronFEMForceField  youngModulus="15000000" poissonRatio="0.3"/>
+			
+			<BoxROI name="boxOnlyX" box="0.045 -0.015 0.0025 0.050 0.015 0.0025" drawBoxes="true"  /> 
+			<PartialFixedConstraint indices="@boxOnlyX.indices" fixedDirections="0 1 1"/>
+		</Node>
+			
+			
+		
+			
+			
+<!--		<UncoupledConstraintCorrection /> -->
+		<SparseLDLSolver name="preconditioner"/>
+		<LinearSolverConstraintCorrection solverName="preconditioner" />
+
+				
+		
+			
+		
+		<Node name="controlledPoints" activated="true" >
+			<MechanicalObject name="actuatedPoints" template="Vec3d" position="0 0 0.0025   0.045 0.005 0   0.045 -0.005 0   -0.045 0.005 0   -0.045 -0.005 0  0.048 0.0 0 " />
+			<PositionEffector indices="0" useDirections='1 0 0' effectorGoal="@../../goal/goalMO.position" />
+<!-- 			<CableActuator name="cable1" indices="1" pullPoint="0.880 0.005 0" dir="1 0 0" maxPositiveDisp="0.025" /> -->
+<!-- 			<CableActuator name="cable1a" indices="2" pullPoint="0.880 -0.005 0" dir="1 0 0" maxPositiveDisp="0.025" /> -->
+<!-- 			<CableActuator name="cable2" indices="3" pullPoint="-0.880 0.005 0" dir="1 0 0" maxPositiveDisp="0.025" /> -->
+<!-- 			<CableActuator name="cable2a" indices="4" pullPoint="-0.880 -0.005 0" dir="1 0 0" maxPositiveDisp="0.025" /> -->
+			
+			<CableActuator name="cable0" indices="5" pullPoint="0.300 0.0 0" maxPositiveDisp="0.25" /> 
+
+			<BoxROI name="box" box="-0.01 -0.01 -0.01 0.01 0.01 0.01"/>
+			<ConstantForceField indices="@box.indices" force="0 0 -0.0" showArrowSize="0.5" />
+
+			<BarycentricMapping mapForces="true" mapMasses="false"/>
+
+			<InteractiveControl name="DCMotorA" address="127.0.0.1" port="1995" motorIndex="1" mode="3" setpoint="@../../QP.computedVariations" printCableDisplacement="0" printLog="1"/>
+		</Node>
+		
+		
+		
+	</Node>	
+		
+		
+</Node>

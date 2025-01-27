@@ -1,0 +1,32 @@
+# Git info for PluginExample
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+7567afdb787904f808d859b79e833dc528dcdece
+
+## Branches containing current commit
+## git branch -a --contains 7567afdb787904f808d859b79e833dc528dcdece 
+* (HEAD detached at origin/v23.06)
+  master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/pr/4/head
+  remotes/origin/pr/4/merge
+  remotes/origin/v23.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/PluginExample (fetch)
+origin	https://github.com/sofa-framework/PluginExample (push)
+
+## More info
+## git log --pretty -n 1
+commit 7567afdb787904f808d859b79e833dc528dcdece
+Author: Hugo <hugo.talbot@sofa-framework.org>
+Date:   Tue Feb 14 22:09:02 2023 +0100
+
+    Update path following NG MyVisualModel (#3)
+    
+    * Update path
+    
+    * Fix namespace

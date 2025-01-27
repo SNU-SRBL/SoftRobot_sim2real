@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<Node name="root" gravity="0 -9.81 0" dt="0.01">
+
+<!-- 	<FreeMotionAnimationLoop/> -->
+<!-- 	<GenericConstraintSolver printLog="1"/> -->
+	 
+	<VisualStyle displayFlags="showCollision showVisualModels showForceFields showInteractionForceFields showBehaviorModels" />
+    <DefaultPipeline name="CollisionPipeline" verbose="0" />
+    <BruteForceBroadPhase />
+    <BVHNarrowPhase/>
+    <DefaultContactManager name="collision response" response="default" />
+	
+    <Node name="object">
+        <EulerImplicitSolver name="cg_odesolver" firstOrder="0"  />
+<!--         <EulerSolver name="cg_odesolver"  /> -->
+<!--        <CGLinearSolver iterations="150" threshold="1e-20" tolerance="1e-20"/> -->
+<!-- 	<PCGLinearSolver preconditioners="slu" tolerance="1e-15"/>  -->
+        <SparseLDLSolver name="slu"/>
+		
+        
+<!--         <MechanicalObject template="Rigid3" name="dofs" position="0 0 0 0 0 0 1	3 0 0 0 0 0 1" /> -->
+        <MechanicalObject template="Rigid3" name="dofs" position="0 0 0 0 0 0 1	3 0 0 0 0 0 1	6 0 0 0 0 0 1" />
+        
+        <UniformMass  totalMass="0.0001" />
+	<PREquivalentStiffnessForceField complianceFile="./compliance.txt" coefForce="1" />
+<!-- 	<PREquivalentStiffnessForceField complianceFile="./cIntervertebraFine.txt" coefForce="1" /> -->
+<!-- 	<ConstantForceField points="1" force="0 -5 0 0 0 0 0" /> -->
+<!-- 	<ConstantForceField points="2" force="0 -5 0 0 0 0 0" /> -->
+<!-- 	<ConstantForceField points="2" force="0 0 0 0.05 0 0" /> -->
+<!-- 	<ConstantForceField points="2" force="0 0 0 0 50 0" /> -->
+        <FixedConstraint  name="FixedConstraint" indices="0" />
+		
+<!-- 		<PartialRigidificationConstraint /> -->
+		
+<!-- 		<LinearSolverConstraintCorrection solverName="slu"/> -->
+		
+<!--		<Node name='collision'>
+			<PointSetTopologyContainer position="1 1 0" />
+			<MechanicalObject template="Vec3" />
+			<Point/>
+			<RigidMapping index="2" />
+		</Node>	-->
+		
+		
+    </Node>
+	
+</Node>

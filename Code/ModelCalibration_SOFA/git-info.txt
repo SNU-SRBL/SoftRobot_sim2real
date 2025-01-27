@@ -1,0 +1,23 @@
+# Git info for Sofa
+
+## Current commit
+## git rev-parse --abbrev-ref HEAD
+5e1b20c723e4f9c17d9959fc68d5a5d478dd8512
+
+## Branches containing current commit
+## git branch -a --contains 5e1b20c723e4f9c17d9959fc68d5a5d478dd8512 
+* (HEAD detached at 5e1b20c723)
+  remotes/origin/v23.06
+
+## Remotes
+## git remote -vv 
+origin	https://github.com/sofa-framework/sofa.git (fetch)
+origin	https://github.com/sofa-framework/sofa.git (push)
+
+## More info
+## git log --pretty -n 1
+commit 5e1b20c723e4f9c17d9959fc68d5a5d478dd8512
+Author: Hugo Talbot <hugo.talbot@sofa-framework.org>
+Date:   Thu Jun 29 23:24:09 2023 +0200
+
+    Remove SofaPython plugin reference

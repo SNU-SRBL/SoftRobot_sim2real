@@ -1,0 +1,74 @@
+import Sofa
+
+import os
+
+
+#path = os.path.dirname(os.path.abspath(__file__))+'/../sdh/meshes/'
+
+def createScene(rootNode):
+        rootNode.addObject('VisualStyle', displayFlags='hideVisualModels showBehaviorModels showCollisionModels hideBoundingCollisionModels showForceFields hideInteractionForceFields hideWireframe')
+
+        rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
+        
+        ################################### NEW
+        rootNode.findData('gravity').value='0 0 -9.81';
+        rootNode.addObject('FreeMotionAnimationLoop', solveVelocityConstraintFirst='0')
+        rootNode.addObject('GenericConstraintSolver', maxIterations="10000", tolerance="1e-15")
+        rootNode.addObject('DefaultPipeline', verbose="0")
+        rootNode.addObject('BruteForceBroadPhase')
+        rootNode.addObject('BVHNarrowPhase')
+        rootNode.addObject('RuleBasedContactManager', name="Response", response="FrictionContact", rules="0 * FrictionContact?mu=0.8" )
+        rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance="0.01", contactDistance="0.001", angleCone="0.1")
+        
+        
+        
+        ################################### end new (see end of the file)
+        # solver
+        baseDOF = rootNode.addChild('baseDOF')
+        baseDOF.addObject('EulerImplicitSolver', name='odesolver', firstOrder=True)
+        #baseDOF.addObject('CGLinearSolver', iterations='1000', tolerance='1e-15', threshold='1e-20')
+        baseDOF.addObject('SparseLDLSolver', name='linearSolver')
+        baseDOF.addObject('GenericConstraintCorrection', solverName='linearSolver')
+        
+        baseDOF.addObject('MechanicalObject', name="goalMO", position="0.0 0.0 0.0456", rest_position="0.0 0.0 0.0456")
+        baseDOF.addObject('SphereCollisionModel', radius="0.008", group="3")
+        baseDOF.addObject('RestShapeSpringsForceField', name="spring", stiffness='1e3', angularStiffness='1e5')
+        baseDOF.addObject('BoxROI', name="boxOnlyY", box="-0.01 -0.01 0.04 0.01 0.01 0.06", drawBoxes=False)
+        baseDOF.addObject('PartialFixedConstraint', indices="@boxOnlyY.indices", fixedDirections="1 1 0")
+        
+        
+        # Add controller (allow to move the rest position of baseDOF and GrasperDOF)
+        baseDOF.addObject('PythonScriptController', filename="CubeController.py", classname="controllerStiffness")
+
+        ################################ Grasped Object ###################################
+                
+        # mechanics
+        cube = rootNode.addChild('cube')
+        cube.addObject('EulerImplicitSolver', name='odesolver')
+        cube.addObject('SparseLDLSolver', name='linearSolver', rayleighStiffness="0.0", rayleighMass="0.0")
+        cube.addObject('GenericConstraintCorrection', solverName='linearSolver')
+        
+        cube.addObject('SparseGrid', n="3 3 3", fileTopology="mesh/cube.obj")
+        cube.addObject('MechanicalObject', dz='0.01', scale='0.03')
+        cube.addObject('HexahedronFEMForceField', name="hexa", youngModulus="5000000", poissonRatio="0.4")
+        cube.addObject('UniformMass', totalMass="0.03")
+        cube.addObject('BoxROI', name="boxA", box="-0.1 -0.1 -0.05 0.1 0.1 0", drawBoxes=False)
+        cube.addObject('FixedConstraint', indices="@boxA.indices")
+        
+        #visualization
+        cubeVisu = cube.addChild('cubeVisu')
+        cubeVisu.addObject('OglModel', name="Visual", fileMesh="mesh/cubeQuad.obj", color="1 0.1 0.5 1")
+        cubeVisu.addObject('BarycentricMapping')
+            
+        #collision
+        cubeCollis = cube.addChild('collis')
+        cubeCollis.addObject('MeshObjLoader', name='loader', filename='mesh/cube_low_res.obj', scale='0.26')
+        cubeCollis.addObject('TriangleSetTopologyContainer', src='@loader', name='container')
+        cubeCollis.addObject('MechanicalObject', name='collisMO', template='Vec3')
+        cubeCollis.addObject('Triangle', group='2')
+        cubeCollis.addObject('Line', group='2')
+        cubeCollis.addObject('Point', group='2')
+        cubeCollis.addObject('BarycentricMapping')
+
+        return rootNode
+        
